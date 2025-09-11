@@ -65,6 +65,7 @@ Clipboard History Viewer는 웹에서 복사한 텍스트를 자동으로 기록
 - chrome.storage.local로 데이터 영구 저장
 
 ### 디렉터리 구조
+   
 ```bash
 clipboard-history/
 ├─ manifest.json
@@ -108,6 +109,7 @@ clipboard-history/
 1) Content Script — 복사 감지 및 전송
 
 웹페이지에서 발생하는 `copy/cut` 이벤트를 가장 먼저 잡아냅니다. 선택된 텍스트가 있으면 그것을 우선 사용하고, 없으면 `ClipboardEvent`의 `clipboardData`에서 텍스트를 읽습니다. 일부 브라우저(특히 Brave) 환경에서 이벤트 타이밍/권한 차이가 있어, 짧은 지연 후 `navigator.clipboard.readText()`로 폴백을 한 번 더 시도합니다. 최종적으로는 Service Worker로 메시지를 보냅니다.
+   
 ```ts
 // src/content.ts
 function pushCopy(text: string) {
@@ -137,6 +139,7 @@ document.addEventListener("copy", (e) => {
 - 최대 200개로 제한(LRU 느낌으로 상단이 최신)
 - “연속 중복”은 바로 무시하여 노이즈 제거
 - “전체 중복”은 기존 항목을 제거한 뒤 맨 앞에 새로 추가(최신 본문 유지)
+   
 ```ts
 // src/sw.ts
 const KEY = "clipboard_history";
@@ -168,7 +171,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   return true; // async
 });
 ```
-
+   
 3) Popup — 검색/복사/핀/삭제 + Clear All 시 핀 보호
 
 팝업은 “바로 찾아 쓰기”에 집중했습니다.
@@ -176,6 +179,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 - 복사는 기본 `navigator.clipboard.writeText` 사용, 실패 시 `execCommand('copy')` 폴백
 - 핀은 `Set<string>`(본문 기준)으로 관리하고 `chrome.storage.local`에 별도 저장하여 세션 간 유지
 - Clear All은 “핀 보호”가 기본값: 핀만 남기고 나머지만 삭제
+      
 ```ts
 // src/popup.ts (발췌)
 const KEY = "clipboard_history";
@@ -213,7 +217,7 @@ document.getElementById("clear")!.addEventListener("click", async () => {
 
 ## 4. 사용 방법
 
-### 1) 클론 & 설치 & 빌드
+### 1) 클론 & 설치 & 빌드  
 ```bash
 git clone https://github.com/esoyeon/clipboard-history-viewer.git
 cd clipboard-history-viewer
