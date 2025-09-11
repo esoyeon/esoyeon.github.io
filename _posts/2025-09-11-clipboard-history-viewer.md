@@ -140,7 +140,7 @@ document.addEventListener("copy", (e) => {
 - “연속 중복”은 바로 무시하여 노이즈 제거
 - “전체 중복”은 기존 항목을 제거한 뒤 맨 앞에 새로 추가(최신 본문 유지)
    
-```ts
+```js
 // src/sw.ts
 const KEY = "clipboard_history";
 const LIMIT = 200;
@@ -180,7 +180,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 - 핀은 `Set<string>`(본문 기준)으로 관리하고 `chrome.storage.local`에 별도 저장하여 세션 간 유지
 - Clear All은 “핀 보호”가 기본값: 핀만 남기고 나머지만 삭제
       
-```ts
+```js
 // src/popup.ts (발췌)
 const KEY = "clipboard_history";
 let allItems: Item[] = [];
@@ -217,7 +217,8 @@ document.getElementById("clear")!.addEventListener("click", async () => {
 
 ## 4. 사용 방법
 
-### 1) 클론 & 설치 & 빌드  
+### 1) 클론 & 설치 & 빌드   
+   
 ```bash
 git clone https://github.com/esoyeon/clipboard-history-viewer.git
 cd clipboard-history-viewer
