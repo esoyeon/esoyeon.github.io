@@ -13,8 +13,6 @@ tags:
 permalink: /development/clipboard-history-viewer/
 toc: true
 toc_sticky: true
-header:
-  image: /assets/images/posts_img/clipboard-history-viewer.png
 
 date: 2025-09-11
 last_modified_at: 2025-09-11
@@ -49,6 +47,13 @@ Clipboard History Viewer는 웹에서 복사한 텍스트를 자동으로 기록
 - ⏱️ 타임스탬프/출처: 언제/어디서 복사했는지 표시
 - 🗑️ 관리: 개별 삭제, 전체 삭제(핀 항목은 보호), 수동으로 클립보드 읽기
 - ⌨️ 단축키: 히스토리 열기(Ctrl+Shift+Y / Cmd+Shift+Y), 현재 클립보드 저장(Ctrl+Shift+U / Cmd+Shift+U)
+
+### 설계 의도
+
+- “빠르게 찾기”가 목표라서 텍스트 위주의 단순한 UI/UX를 채택했습니다. 검색은 입력 즉시 필터링되도록 클라이언트 사이드에서 처리합니다.
+- 브라우저 보안 정책(사용자 제스처 필요, 특수 페이지 제한)을 고려하여 자동 수집은 웹페이지에서의 복사 이벤트에 집중하고, 외부 앱에서 복사한 내용은 버튼/단축키로 “수동 저장” 흐름을 제공합니다.
+- 중복은 “연속 중복(바로 직전과 동일)”과 “전체 중복(리스트 내 중복)”을 분리해 처리합니다. 연속 중복은 노이즈를 줄이고, 전체 중복 제거는 최신 항목만 남기기 위함입니다.
+- “핀 고정”은 단순 즐겨찾기가 아니라 “보호”의 의미를 갖도록 했습니다. Clear All 시에도 핀은 남겨 워크플로우를 망치지 않도록 했습니다.
 
 ---
 
@@ -101,6 +106,8 @@ clipboard-history/
 ### 주요 구현 흐름
 
 1) Content Script — 복사 감지 및 전송
+
+웹페이지에서 발생하는 `copy/cut` 이벤트를 가장 먼저 잡아냅니다. 선택된 텍스트가 있으면 그것을 우선 사용하고, 없으면 `ClipboardEvent`의 `clipboardData`에서 텍스트를 읽습니다. 일부 브라우저(특히 Brave) 환경에서 이벤트 타이밍/권한 차이가 있어, 짧은 지연 후 `navigator.clipboard.readText()`로 폴백을 한 번 더 시도합니다. 최종적으로는 Service Worker로 메시지를 보냅니다.
 ```ts
 // src/content.ts
 function pushCopy(text: string) {
@@ -125,6 +132,11 @@ document.addEventListener("copy", (e) => {
 ```
 
 2) Service Worker — 중복 제거/저장
+
+백그라운드(Service Worker)는 수신한 텍스트를 `chrome.storage.local`에 저장합니다. 저장 정책은 다음과 같습니다.
+- 최대 200개로 제한(LRU 느낌으로 상단이 최신)
+- “연속 중복”은 바로 무시하여 노이즈 제거
+- “전체 중복”은 기존 항목을 제거한 뒤 맨 앞에 새로 추가(최신 본문 유지)
 ```ts
 // src/sw.ts
 const KEY = "clipboard_history";
@@ -158,6 +170,12 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 ```
 
 3) Popup — 검색/복사/핀/삭제 + Clear All 시 핀 보호
+
+팝업은 “바로 찾아 쓰기”에 집중했습니다.
+- 검색은 소문자 변환 후 포함 여부만 체크하는 단순/빠른 방식
+- 복사는 기본 `navigator.clipboard.writeText` 사용, 실패 시 `execCommand('copy')` 폴백
+- 핀은 `Set<string>`(본문 기준)으로 관리하고 `chrome.storage.local`에 별도 저장하여 세션 간 유지
+- Clear All은 “핀 보호”가 기본값: 핀만 남기고 나머지만 삭제
 ```ts
 // src/popup.ts (발췌)
 const KEY = "clipboard_history";
