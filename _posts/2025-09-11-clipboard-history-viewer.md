@@ -14,7 +14,7 @@ permalink: /development/clipboard-history-viewer/
 toc: true
 toc_sticky: true
 header:
-  image: /assets/images/clipboard-history-viewer.png
+  image: /assets/images/posts_img/clipboard-history-viewer.png
 
 date: 2025-09-11
 last_modified_at: 2025-09-11
@@ -24,32 +24,22 @@ last_modified_at: 2025-09-11
 
 2025년 9월 11일
 
-## On this page
-- [프로젝트 소개](#프로젝트-소개) · [Permalink](#프로젝트-소개)
-- [기능 기획](#기능-기획) · [Permalink](#기능-기획)
-- [개발 과정](#개발-과정) · [Permalink](#개발-과정)
-- [사용 방법](#사용-방법) · [Permalink](#사용-방법)
-- [한계와 개선 아이디어](#한계와-개선-아이디어) · [Permalink](#한계와-개선-아이디어)
-- [마무리](#마무리) · [Permalink](#마무리)
+[![Demo thumbnail](/assets/images/posts_img/clipboard-history-viewer.png)](https://www.youtube.com/watch?v=hfsTbGbjUAk)
 
 ---
 
 ## 1. 프로젝트 소개
-[Permalink](#프로젝트-소개)
 
 브라우저에서 텍스트를 복사하다 보면 “방금 전에 복사했던 그 문장”을 다시 찾고 싶을 때가 많다. macOS용 클립보드 매니저도 좋지만, 브라우저 안에서 가볍게 쓸 수 있는 도구가 있으면 더 편리하다고 느꼈다.
 
 Clipboard History Viewer는 웹에서 복사한 텍스트를 자동으로 기록하고, 팝업에서 검색·복사·삭제·핀 고정까지 할 수 있는 Chrome/Brave 확장 프로그램이다. Manifest V3 기반으로 TypeScript, Vite, @crxjs/vite-plugin을 사용해 만들었다.
 
-- GitHub 저장소: https://github.com/esoyeon/clipboard-history-viewer
-- 데모 영상: https://www.youtube.com/watch?v=hfsTbGbjUAk
-
-![Demo thumbnail](/assets/images/clipboard-history-viewer.png)
+- GitHub 저장소: [https://github.com/esoyeon/clipboard-history-viewer](https://github.com/esoyeon/clipboard-history-viewer)
+- 데모 영상: [https://www.youtube.com/watch?v=hfsTbGbjUAk](https://www.youtube.com/watch?v=hfsTbGbjUAk)
 
 ---
 
 ## 2. 기능 기획
-[Permalink](#기능-기획)
 
 핵심은 단순했다. “복사한 텍스트를 빠르게 찾고, 다시 쓰기 좋게.”
 
@@ -58,14 +48,11 @@ Clipboard History Viewer는 웹에서 복사한 텍스트를 자동으로 기록
 - 📌 핀 고정: 자주 쓰는 문장은 상단에 고정 (Clear All에서도 보호)
 - ⏱️ 타임스탬프/출처: 언제/어디서 복사했는지 표시
 - 🗑️ 관리: 개별 삭제, 전체 삭제(핀 항목은 보호), 수동으로 클립보드 읽기
-- ⌨️ 단축키:
-  - 히스토리 열기: Ctrl+Shift+Y (macOS는 Cmd+Shift+Y)
-  - 현재 클립보드 저장: Ctrl+Shift+U (macOS는 Cmd+Shift+U)
+- ⌨️ 단축키: 히스토리 열기(Ctrl+Shift+Y / Cmd+Shift+Y), 현재 클립보드 저장(Ctrl+Shift+U / Cmd+Shift+U)
 
 ---
 
 ## 3. 개발 과정
-[Permalink](#개발-과정)
 
 ### 기술 스택
 - Manifest V3 기반 Chrome/Brave Extension
@@ -207,7 +194,6 @@ document.getElementById("clear")!.addEventListener("click", async () => {
 ---
 
 ## 4. 사용 방법
-[Permalink](#사용-방법)
 
 ### 1) 클론 & 설치 & 빌드
 ```bash
@@ -233,7 +219,6 @@ npm run build
 ---
 
 ## 5. 한계와 개선 아이디어
-[Permalink](#한계와-개선-아이디어)
 
 - 🔒 사용자 제스처 제약: 브라우저 보안상 일부 클립보드 읽기는 제스처가 필요
 - 🧾 Plain Text 중심: 이미지/리치 텍스트는 미지원
@@ -243,9 +228,8 @@ npm run build
 ---
 
 ## 6. 마무리
-[Permalink](#마무리)
 
 작지만 매일 쓰게 되는 유틸리티를 브라우저 확장으로 만들어 보았다. Manifest V3 환경에서 Service Worker, Content Script, Popup 흐름을 온전히 구현했고, 실제 사용성(검색/핀/단축키/중복 제거/Brave 호환성)을 꼼꼼히 보강했다.
 
-- GitHub Repo: https://github.com/esoyeon/clipboard-history-viewer
-- Demo YouTube: https://www.youtube.com/watch?v=hfsTbGbjUAk
+- GitHub Repo: [https://github.com/esoyeon/clipboard-history-viewer](https://github.com/esoyeon/clipboard-history-viewer)
+- Demo YouTube: [https://www.youtube.com/watch?v=hfsTbGbjUAk](https://www.youtube.com/watch?v=hfsTbGbjUAk)
